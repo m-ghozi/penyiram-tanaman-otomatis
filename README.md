@@ -11,6 +11,7 @@ Komponen :
 
 
 Library :
-ESP32 Board Library : https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-Universal Telegram Bot Library written by Brian Lough: https://github.com/witnessmenow/Universal-Arduino-Telegram-Bot
-ArduinoJson library
+
+1. ESP32 Board Library : https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+2. Universal Telegram Bot Library written by Brian Lough: https://github.com/witnessmenow/Universal-Arduino-Telegram-Bot
+3. ArduinoJson library
