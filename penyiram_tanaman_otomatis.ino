@@ -4,7 +4,7 @@
   #include <ESP8266WiFi.h>
 #endif
 #include <WiFiClientSecure.h>
-#include <UniversalTelegramBot.h>   // Universal Telegram Bot Library written by Brian Lough: https://github.com/witnessmenow/Universal-Arduino-Telegram-Bot
+#include <UniversalTelegramBot.h>
 #include <ArduinoJson.h>
 
 // Replace with your network credentials
@@ -30,8 +30,13 @@ UniversalTelegramBot bot(BOTtoken, client);
 int botRequestDelay = 1000;
 unsigned long lastTimeBotRan;
 
+// Setup relay pin for pump
 const int relayPin = 2;
 bool ledState = LOW;
+
+// Setup soil Moisture Sensor
+#define soilSensor 36
+#define THRESHOLD 1000
 
 // Handle what happens when you receive new messages
 void handleNewMessages(int numNewMessages) {
@@ -116,4 +121,21 @@ void loop() {
     }
     lastTimeBotRan = millis();
   }
+  readSoil();
 }
+
+void readSoil() {
+  int value = analogRead(soilSensor); // read the analog value from sensor
+
+  if (value < THRESHOLD)
+    Serial.print("The soil is DRY (");
+  else
+    Serial.print("The soil is WET (");
+    
+  Serial.print(value);
+  Serial.println(")");
+
+  delay(500);
+}
+
+// TODO : setup LCD for showing the soil moisture sensor value
