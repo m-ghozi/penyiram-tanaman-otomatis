@@ -6,17 +6,19 @@
 #include <WiFiClientSecure.h>
 #include <UniversalTelegramBot.h>
 #include <ArduinoJson.h>
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
 
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 // Replace with your network credentials
-const char* ssid = "HR";
-const char* password = "123456789";
+const char* ssid = "rell";
+const char* password = "12345678888";
 
 // Initialize Telegram BOT
 #define BOTtoken "6683503979:AAHN2JfsBZooCKDn5nmEVgJnBpAH5CfzAH4"  // your Bot Token (Get from Botfather)
 
 // Use @myidbot to find out the chat ID of an individual or a group
-// Also note that you need to click "start" on a bot before it can
-// message you
+// Also note that you need to click "start" on a bot before it can message you
 #define CHAT_ID "1200713317"
 
 #ifdef ESP8266
@@ -35,8 +37,10 @@ const int relayPin = 2;
 bool ledState = LOW;
 
 // Setup soil Moisture Sensor
-#define soilSensor 36
-#define THRESHOLD 1000
+#define soilSensor 35
+int _moisture;
+String kondisi_tanah;
+String status_pompa = "Mati";
 
 // Handle what happens when you receive new messages
 void handleNewMessages(int numNewMessages) {
@@ -58,10 +62,10 @@ void handleNewMessages(int numNewMessages) {
     String from_name = bot.messages[i].from_name;
 
     if (text == "/start") {
-      String welcome = "Welcome, " + from_name + ".\n";
+      String welcome = "Hallo, " + from_name + ".\n";
       welcome += "Gunakan perintah-perintah berikut.\n\n";
       welcome += "/siram untuk menyiram secara manual \n";
-      welcome += "/state to request current GPIO state \n";
+      welcome += "/status untuk melihat status tanah dan pompa \n";
       bot.sendMessage(chat_id, welcome, "");
     }
 
@@ -69,18 +73,21 @@ void handleNewMessages(int numNewMessages) {
       bot.sendMessage(chat_id, "Tanaman disiram secara Manual", "");
       ledState = HIGH;
       digitalWrite(relayPin, ledState);
+      lcd.setCursor(0,1);
+      lcd.print("Pompa Nyala");
+      status_pompa = "Menyala";
       delay(5000);
       digitalWrite(relayPin,LOW);
+      lcd.setCursor(0,1);
+      lcd.print("Pompa Mati ");
+      status_pompa = "Mati";
     }
     
     
-    if (text == "/state") {
-      if (digitalRead(relayPin)){
-        bot.sendMessage(chat_id, "pompa is ON", "");
-      }
-      else{
-        bot.sendMessage(chat_id, "pompa is OFF", "");
-      }
+    if (text == "/status") {
+      String _status = "Kondisi Tanah saat ini : " + kondisi_tanah + ", " + _moisture + "%" + ".\n";
+      _status += "Kondisi Pompa : " + status_pompa + ".\n";
+      bot.sendMessage(chat_id, _status, "");
     }
   }
 }
@@ -88,6 +95,8 @@ void handleNewMessages(int numNewMessages) {
 void setup() {
   Serial.begin(115200);
 
+  lcd.begin();
+  lcd.backlight();
   #ifdef ESP8266
     configTime(0, 0, "pool.ntp.org");      // get UTC time via NTP
     client.setTrustAnchors(&cert); // Add root certificate for api.telegram.org
@@ -126,16 +135,22 @@ void loop() {
 
 void readSoil() {
   int value = analogRead(soilSensor); // read the analog value from sensor
-
-  if (value < THRESHOLD)
-    Serial.print("The soil is DRY (");
-  else
-    Serial.print("The soil is WET (");
-    
-  Serial.print(value);
-  Serial.println(")");
-
-  delay(500);
+  _moisture = ( 100 - ( (value/4095.00) * 100));
+  Serial.print("Moisture = ");
+  Serial.print(_moisture);  /* Print Temperature on the serial window */
+  Serial.println("%");
+  delay(200);              /* Wait for 1000mS */
+  if (_moisture > 30) {
+    lcd.setCursor(0,0);
+    kondisi_tanah = "Basah";
+    lcd.print("Basah ");
+    lcd.print(_moisture);
+    lcd.print("%  ");
+  } else {
+    lcd.setCursor(0,0);
+    kondisi_tanah = "Kering";
+    lcd.print("Kering ");
+    lcd.print(_moisture);
+    lcd.print("%  ");
+  }
 }
-
-// TODO : setup LCD for showing the soil moisture sensor value
