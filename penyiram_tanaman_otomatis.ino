@@ -11,8 +11,8 @@
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 // Replace with your network credentials
-const char* ssid = "rell";
-const char* password = "12345678888";
+const char* ssid = "HR";
+const char* password = "123456789";
 
 // Initialize Telegram BOT
 #define BOTtoken "6683503979:AAHN2JfsBZooCKDn5nmEVgJnBpAH5CfzAH4"  // your Bot Token (Get from Botfather)
@@ -154,3 +154,7 @@ void readSoil() {
     lcd.print("%  ");
   }
 }
+
+
+// TODO : Membuat mode siram otomatis berdasarkan waktu
+// TODO : Buat rangkaian di fritzing
