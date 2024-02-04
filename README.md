@@ -7,7 +7,7 @@ Komponen :
 | Soil Moisture Sensor      |   1    |
 | LCD 16x2                  |   1    |
 | Relay 1 Channel           |   1    |
-| Water DC Pump             |   1    |
+| Water Pump AC 220V        |   1    |
 
 
 Library :
