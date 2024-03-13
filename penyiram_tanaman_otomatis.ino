@@ -11,8 +11,8 @@
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 // Replace with your network credentials
-const char* ssid = "HR";
-const char* password = "123456789";
+const char* ssid = "your ssid";
+const char* password = "wifi password";
 
 // Initialize Telegram BOT
 #define BOTtoken "your token"  // your Bot Token (Get from Botfather)
